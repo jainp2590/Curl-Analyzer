@@ -1,0 +1,68 @@
+{
+  "name": "curl-analyzer",
+  "version": "1.0.0",
+  "description": "test commit test commit 1",
+  "displayName": "Curl Analyzer",
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -w -p tsconfig.json",
+    "package": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jainp2590/Deep-Agent.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jainp2590/Deep-Agent/issues"
+  },
+  "homepage": "https://github.com/jainp2590/Deep-Agent#readme",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "publisher": "local",
+  "activationEvents": [
+    "onCommand:curlDoctor.analyze"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "curlDoctor.analyze",
+        "title": "Curl Analyzer: Analyze cURL"
+      }
+    ],
+    "configuration": {
+      "title": "Curl Analyzer",
+      "properties": {
+        "curlAnalyzer.openaiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API key (prefer OPENAI_API_KEY env var)."
+        },
+        "curlAnalyzer.openaiModel": {
+          "type": "string",
+          "default": "gpt-4.1-mini",
+          "description": "OpenAI model for RCA generation."
+        },
+        "curlAnalyzer.useOpenAiRca": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use OpenAI to generate RCA when API key is available."
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/shell-quote": "^1.7.5",
+    "@types/vscode": "^1.110.0",
+    "esbuild": "^0.27.4",
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "shell-quote": "^1.8.3"
+  }
+}
