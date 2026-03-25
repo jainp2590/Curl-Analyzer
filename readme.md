@@ -81,3 +81,25 @@ same redaction before writing the `.md` file.
 
 - The extension currently treats the pasted input as a single cURL command.
 - The report includes truncated stdout/stderr to avoid huge files.
+
+## Contributing
+
+If you’d like to contribute:
+
+- **Fork** this repo on GitHub
+- **Create a branch** in your fork (e.g. `feature/better-rca` or `fix/redaction-edge-case`)
+- **Make changes** and add/update docs as needed
+- **Open a Pull Request** back to this repository with:
+  - what you changed and why
+  - how you tested it (example cURL + expected outcome)
+
+## Issues
+
+If you find a bug or want a feature:
+
+- **Open an issue** on GitHub describing:
+  - what you ran (redact secrets first)
+  - what happened vs what you expected
+  - your OS and VS Code version
+  - the generated report file (`curl_analyzer_report_*.md`) if it helps (redact if needed)
+
