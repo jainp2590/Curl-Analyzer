@@ -13,7 +13,9 @@ It can:
 
 - **Input**: you paste a cURL command.
 - **Static checks**: parses method, URL, headers, body and flags common breakages.
-- **Execution**: runs `curl` with `-v -s -S` and a timeout and captures stdout/stderr.
+- **Execution**: normalizes line endings and bash `\\` continuations, then on **macOS/Linux**
+  runs the command through `/bin/sh -c` so it matches your shell (avoids malformed-URL
+  noise from bad CRLF / argv splitting). On **Windows** it uses `curl` with parsed argv.
 - **RCA**:
   - **Heuristic**: uses exit codes + verbose output patterns, or
   - **OpenAI (optional)**: sends redacted evidence to OpenAI and merges the model RCA.
@@ -28,6 +30,9 @@ npm run build
 
 Then open this repo in VS Code and press `F5`.
 
+The **Run Extension** launch config opens **this same folder** in the Extension Development
+Host, so you have one workspace: reports save in this repo root, not a blank window.
+
 ## Use
 
 Run the command:
@@ -37,7 +42,8 @@ Paste a cURL command (or select it in the editor before running the command).
 
 ## Output
 
-The extension writes a report to your workspace root:
+The extension writes a report to the **root of the workspace folder** that contains your
+active editor file (or the first folder if none). Filename:
 - `curl_analyzer_report_YYYYMMDD_HHMMSS.md`
 
 It also prints a summary to the `Curl Analyzer` output channel.
@@ -102,5 +108,3 @@ If you find a bug or want a feature:
   - what happened vs what you expected
   - your OS and VS Code version
   - the generated report file (`curl_analyzer_report_*.md`) if it helps (redact if needed)
-
--- test commit 1

@@ -1,5 +1,5 @@
-import { parse as shellParse } from 'shell-quote';
 import * as vscode from 'vscode';
+import { parseCurlTokens } from './parse_curl_tokens';
 import { URL } from 'url';
 
 type Severity = 'error' | 'warning' | 'info';
@@ -63,8 +63,8 @@ export function analyzeCurl(curl_text: string): CurlAnalysisResult {
 function parseCurlToModel(curl_text: string): { model?: CurlModel; issues: CurlIssue[] } {
   const issues: CurlIssue[] = [];
 
-  const tokens_raw = safeShellParse(curl_text);
-  if (!tokens_raw) {
+  const tokens_raw = parseCurlTokens(curl_text);
+  if (tokens_raw === null) {
     issues.push({
       code: 'curlDoctor.parse_failed',
       severity: 'error',
@@ -77,9 +77,7 @@ function parseCurlToModel(curl_text: string): { model?: CurlModel; issues: CurlI
     return { issues };
   }
 
-  const tokens = tokens_raw
-    .filter((t) => typeof t === 'string')
-    .map((t) => String(t));
+  const tokens = tokens_raw;
 
   if (tokens.length === 0) {
     issues.push({
@@ -271,16 +269,6 @@ function validateBody(model: CurlModel): { details: string[]; issues: CurlIssue[
   }
 
   return { details, issues };
-}
-
-function safeShellParse(input: string): unknown[] | null {
-  try {
-    const parsed = shellParse(input);
-    if (!Array.isArray(parsed)) return null;
-    return parsed;
-  } catch {
-    return null;
-  }
 }
 
 function looksLikeUrl(token: string): boolean {

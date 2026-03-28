@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.analyzeCurl = analyzeCurl;
-const shell_quote_1 = require("shell-quote");
+const parse_curl_tokens_1 = require("./parse_curl_tokens");
 const url_1 = require("url");
 const DEFAULT_METHOD = 'GET';
 function analyzeCurl(curl_text) {
@@ -29,8 +29,8 @@ function analyzeCurl(curl_text) {
 }
 function parseCurlToModel(curl_text) {
     const issues = [];
-    const tokens_raw = safeShellParse(curl_text);
-    if (!tokens_raw) {
+    const tokens_raw = (0, parse_curl_tokens_1.parseCurlTokens)(curl_text);
+    if (tokens_raw === null) {
         issues.push({
             code: 'curlDoctor.parse_failed',
             severity: 'error',
@@ -42,9 +42,7 @@ function parseCurlToModel(curl_text) {
         });
         return { issues };
     }
-    const tokens = tokens_raw
-        .filter((t) => typeof t === 'string')
-        .map((t) => String(t));
+    const tokens = tokens_raw;
     if (tokens.length === 0) {
         issues.push({
             code: 'curlDoctor.empty',
@@ -219,17 +217,6 @@ function validateBody(model) {
         }
     }
     return { details, issues };
-}
-function safeShellParse(input) {
-    try {
-        const parsed = (0, shell_quote_1.parse)(input);
-        if (!Array.isArray(parsed))
-            return null;
-        return parsed;
-    }
-    catch {
-        return null;
-    }
 }
 function looksLikeUrl(token) {
     return token.startsWith('http://') || token.startsWith('https://') || token.includes('.');

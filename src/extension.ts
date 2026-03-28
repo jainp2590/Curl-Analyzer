@@ -71,7 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const report = buildRcaReportMd({ curl_text, run_result, openai_rca });
-    const report_uri = await writeReportToWorkspace(report.md_text);
+    const report_uri = await writeReportToWorkspace(report.md_text, active_document);
     output_channel.appendLine(`Report written: ${report_uri.fsPath}`);
     output_channel.show(true);
 
@@ -162,13 +162,29 @@ function getOpenAiApiKey(): string | undefined {
   return undefined;
 }
 
-async function writeReportToWorkspace(md_text: string): Promise<vscode.Uri> {
-  const workspace = vscode.workspace.workspaceFolders?.[0];
-  const base_uri = workspace?.uri ?? vscode.Uri.file(process.cwd());
+async function writeReportToWorkspace(
+  md_text: string,
+  active_document?: vscode.TextDocument,
+): Promise<vscode.Uri> {
+  const base_uri = resolveReportBaseFolder(active_document);
   const file_name = `curl_analyzer_report_${timestampForFilename()}.md`;
   const report_uri = vscode.Uri.joinPath(base_uri, file_name);
   await vscode.workspace.fs.writeFile(report_uri, Buffer.from(md_text, 'utf8'));
   return report_uri;
+}
+
+function resolveReportBaseFolder(active_document?: vscode.TextDocument): vscode.Uri {
+  if (active_document?.uri.scheme === 'file') {
+    const folder = vscode.workspace.getWorkspaceFolder(active_document.uri);
+    if (folder) return folder.uri;
+  }
+  const first_folder = vscode.workspace.workspaceFolders?.[0];
+  if (first_folder) return first_folder.uri;
+
+  void vscode.window.showWarningMessage(
+    'Curl Analyzer: open a folder in this window so the report can be saved in your repo.',
+  );
+  return vscode.Uri.file(process.cwd());
 }
 
 function timestampForFilename(): string {
